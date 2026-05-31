@@ -50,15 +50,24 @@ def copy_to_clipboard(path):
         return False
 
 
-def pick_folder():
-    """Open a GTK folder picker via zenity. Returns chosen path or None if cancelled."""
-    save_dir = get_save_dir()
+def pick_savepath():
+    """Open a GTK file-save dialog via zenity. Returns the chosen file path or None if cancelled.
+    Using --save mode allows the user to pick an existing file and overwrite it.
+    Pre-fills the next auto-numbered filename so the _1 _2 _3 sequence is preserved by default."""
+    default = next_filename(get_save_dir())
     r = subprocess.run(
-        ["zenity", "--file-selection", "--directory",
-         "--title=Choose save folder", f"--filename={save_dir}/"],
+        ["zenity", "--file-selection", "--save",
+         "--confirm-overwrite",
+         "--title=Save screenshot",
+         "--file-filter=PNG files | *.png",
+         f"--filename={default}"],
         capture_output=True, text=True)
     if r.returncode == 0:
-        return r.stdout.strip()
+        path = r.stdout.strip()
+        # Ensure the file always ends with .png
+        if not path.lower().endswith(".png"):
+            path += ".png"
+        return path
     return None
 
 
@@ -587,12 +596,11 @@ def main():
         notify("Snapick", f"Saved: {os.path.basename(dest)}")
 
     elif action == "saveas":
-        chosen = pick_folder()
+        chosen = pick_savepath()
         if chosen:
-            set_save_dir(chosen)   # remember it for next time
-            dest = next_filename(chosen)
-            shutil.copy2(tmp, dest)
-            notify("Snapick", f"Saved: {os.path.basename(dest)}")
+            set_save_dir(os.path.dirname(chosen))   # remember dir for next time
+            shutil.copy2(tmp, chosen)
+            notify("Snapick", f"Saved: {os.path.basename(chosen)}")
         if os.path.exists(tmp):
             os.remove(tmp)
 
