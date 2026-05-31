@@ -1,0 +1,6 @@
+# Python dependencies — install with: pip install -r requirements.txt
+pygame
+Pillow
+
+# System packages also required (not installable via pip):
+#   sudo apt install python3-dbus python3-gi gir1.2-glib-2.0 wl-clipboard zenity libnotify-bin

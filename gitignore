@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Snapick config (personal save path, no need to share this)
+~/.config/snapick_dir.txt
+
+# Screenshots themselves
+*.png
+
+# Editor/OS junk
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
